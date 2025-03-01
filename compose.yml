@@ -1,0 +1,36 @@
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+      - "8765:8765"
+      - "50051:50051"
+    depends_on:
+      - mongo
+    environment:
+      # 使用服務名稱取代 host.docker.internal，使容器間能直接連線
+      MONGODB_HOST: mongo
+      MONGODB_PORT: "27017"
+
+  mongo:
+    image: mongo:latest
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        REACT_APP_API_URL: http://host.docker.internal:8080
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+
+volumes:
+  mongo-data:
