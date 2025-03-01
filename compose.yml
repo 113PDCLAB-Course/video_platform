@@ -3,6 +3,7 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile
+    tty: true
     ports:
       - "8080:8080"
       - "8765:8765"
@@ -27,6 +28,7 @@ services:
       dockerfile: Dockerfile
       args:
         REACT_APP_API_URL: http://host.docker.internal:8080
+    tty: true
     ports:
       - "3000:3000"
     depends_on:
