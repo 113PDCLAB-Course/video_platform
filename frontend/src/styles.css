@@ -73,6 +73,16 @@ body {
   margin-bottom: 20px;
 }
 
+.success-message {
+  padding: 10px;
+  margin-bottom: 15px;
+  background-color: rgba(75, 181, 67, 0.1);
+  border: 1px solid #4bb543;
+  border-radius: 4px;
+  color: #4bb543;
+  text-align: center;
+}
+
 /* 視頻列表樣式 */
 .video-container {
   padding: 20px;
@@ -208,4 +218,24 @@ body {
 
 .delete-button:hover {
   background-color: #c82333;
+}
+
+.switch-form-text {
+  margin-top: 15px;
+  text-align: center;
+  font-size: 0.9rem;
+}
+
+.text-button {
+  background: none;
+  border: none;
+  color: #007bff;
+  cursor: pointer;
+  font-size: inherit;
+  padding: 0;
+  text-decoration: underline;
+}
+
+.text-button:hover {
+  color: #0056b3;
 }

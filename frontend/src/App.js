@@ -4,7 +4,126 @@ import './styles.css';
 const API_BASE_URL = process.env.REACT_APP_API_URL;
 
 console.log('API_BASE_URL:', API_BASE_URL)
-const Login = ({ onLoginSuccess }) => {
+
+const Register = ({ onSwitchToLogin }) => {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [username, setUsername] = useState('');
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
+
+  const handleRegister = async (e) => {
+    e.preventDefault();
+    
+    // Validate passwords match
+    if (password !== confirmPassword) {
+      setError('密碼不匹配');
+      return;
+    }
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/register`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password, username }),
+      });
+
+      if (response.ok) {
+        setSuccess('註冊成功！請登入您的帳號');
+        setError('');
+        // Clear form
+        setEmail('');
+        setPassword('');
+        setConfirmPassword('');
+        setUsername('');
+        
+        // Automatically switch to login page after successful registration
+        setTimeout(() => {
+          onSwitchToLogin();
+        }, 2000);
+      } else {
+        // Clone the response before trying to read its body
+        const responseClone = response.clone();
+        
+        try {
+          const errorData = await response.json();
+          setError(errorData.message || '註冊失敗，請再試一次');
+        } catch (jsonError) {
+          // If JSON parsing fails, use the cloned response to get text
+          try {
+            const errorText = await responseClone.text();
+            setError(errorText || '註冊失敗，請再試一次');
+          } catch (textError) {
+            // If both fail, use status text
+            setError(`註冊失敗 (${response.status}: ${response.statusText})`);
+          }
+        }
+      }
+    } catch (err) {
+      setError('註冊時發生錯誤');
+      console.log('Registration error:', err);
+    }
+  };
+
+  return (
+    <div className="login-container">
+      <div className="login-box">
+        <h2 className="login-title">創建新帳號</h2>
+        {error && <div className="error-message">{error}</div>}
+        {success && <div className="success-message">{success}</div>}
+        <form onSubmit={handleRegister}>
+          <div className="form-group">
+            <label>使用者名稱</label>
+            <input
+              type="text"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              required
+            />
+          </div>
+          <div className="form-group">
+            <label>電子郵件</label>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+          </div>
+          <div className="form-group">
+            <label>密碼</label>
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+          </div>
+          <div className="form-group">
+            <label>確認密碼</label>
+            <input
+              type="password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              required
+            />
+          </div>
+          <button type="submit" className="login-button">
+            註冊
+          </button>
+        </form>
+        <p className="switch-form-text">
+          已有帳號？ <button className="text-button" onClick={onSwitchToLogin}>登入</button>
+        </p>
+      </div>
+    </div>
+  );
+};
+
+const Login = ({ onLoginSuccess, onSwitchToRegister }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -62,6 +181,9 @@ const Login = ({ onLoginSuccess }) => {
             登入
           </button>
         </form>
+        <p className="switch-form-text">
+          尚未註冊？ <button className="text-button" onClick={onSwitchToRegister}>創建帳號</button>
+        </p>
       </div>
     </div>
   );
@@ -279,6 +401,7 @@ const VideoList = ({ onLogout }) => {
 
 const App = () => {
   const [loggedIn, setLoggedIn] = useState(!!localStorage.getItem('token'));
+  const [showRegister, setShowRegister] = useState(false);
 
   const handleLogout = () => {
     localStorage.removeItem('token');
@@ -290,7 +413,16 @@ const App = () => {
       {loggedIn ? (
         <VideoList onLogout={handleLogout} />
       ) : (
-        <Login onLoginSuccess={() => setLoggedIn(true)} />
+        showRegister ? (
+          <Register 
+            onSwitchToLogin={() => setShowRegister(false)} 
+          />
+        ) : (
+          <Login 
+            onLoginSuccess={() => setLoggedIn(true)} 
+            onSwitchToRegister={() => setShowRegister(true)}
+          />
+        )
       )}
     </div>
   );
