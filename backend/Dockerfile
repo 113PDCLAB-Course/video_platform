@@ -2,6 +2,7 @@ FROM python:3.12
 
 # 設置工作目錄
 WORKDIR /app
+RUN mkdir /app/uploads
 
 # 複製 requirements.txt 到容器中
 COPY requirements.txt .
