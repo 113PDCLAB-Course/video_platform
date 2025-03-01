@@ -14,6 +14,8 @@ services:
       # 使用服務名稱取代 host.docker.internal，使容器間能直接連線
       MONGODB_HOST: mongo
       MONGODB_PORT: "27017"
+    volumes:
+      - ./app_uploads:/app/uploads
 
   mongo:
     image: mongo:latest
@@ -27,7 +29,7 @@ services:
       context: ./frontend
       dockerfile: Dockerfile
       args:
-        REACT_APP_API_URL: http://host.docker.internal:8080
+        REACT_APP_API_URL: http://backend:8080
     tty: true
     ports:
       - "3000:3000"
