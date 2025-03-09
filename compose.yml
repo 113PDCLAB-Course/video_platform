@@ -29,7 +29,7 @@ services:
       context: ./frontend
       dockerfile: Dockerfile
       args:
-        REACT_APP_API_URL: http://backend:8080
+        REACT_APP_API_URL: http://localhost:8080
     tty: true
     ports:
       - "3000:3000"
