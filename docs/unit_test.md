@@ -1,7 +1,7 @@
 # Python Unit Test 
 ## Register API 
 ### 測試目標
-驗證 `register` API 在不同輸入下的行為，包括正常註冊、缺少必要參數、郵箱已存在等情況。
+驗證 `register` API 在不同輸入下的行為，包括正常註冊、缺少必要參數、信箱已存在等情況。
 
 ## 測試環境
 - Python 版本: 3.12.3
