@@ -10,42 +10,38 @@
 
 ## 測試案例
 ### 測試案例編號: RE-001
-**測試案例名稱:** Register API - 參數不正確  
-**測試輸入:**
-傳送 request `POST /api/register`，但提供的參數格式並不是 json。
-**預期結果:**
-`web.HTTPBadRequest(text="Invalid request data")`
+* 測試案例名稱: Register API - 參數不正確  
+* 測試輸入: 傳送 request `POST /api/register`，但提供的參數格式並不是 json。
+* 預期結果: `web.HTTPBadRequest(text="Invalid request data")`
 ---
 
 ### 測試案例編號: RE-002
-**測試案例名稱:** Register API - 參數有缺
-**測試輸入:**
+* 測試案例名稱: Register API - 參數有缺
+* 測試輸入
 ```json
 {
     "password":"123456",
     "email":"existing@example.com"
 }
 ```
-**預期結果:**
-`web.HTTPBadRequest(text=f"Missing required fields: username")`
+* 預期結果: `web.HTTPBadRequest(text=f"Missing required fields: username")`
 ---
 
 ### 測試案例編號: RE-003
-**測試案例名稱:** Register API - email 已註冊  
-**測試輸入:**
+* 測試案例名稱: Register API - email 已註冊  
+* 測試輸入:
 ```json
 {
     "password":"123456",
     "email":"existing@example.com"
 }
 ```
-**預期結果:**
-`raise web.HTTPBadRequest(text="Email already registered")`
+* 預期結果: `web.HTTPBadRequest(text="Email already registered")`
 ---
 
 ### 測試案例編號: RE-003
-**測試案例名稱:** Register API - 註冊成功  
-**測試步驟:**
+* 測試案例名稱: Register API - 註冊成功  
+* 測試步驟 
 ```json
 {
     "username":"example",
@@ -53,7 +49,7 @@
     "email":"existing@example.com"
 }
 ```
-**預期結果:**
+* 預期結果: 
 ```python
 web.json_response({
             "id": str(result.inserted_id),
