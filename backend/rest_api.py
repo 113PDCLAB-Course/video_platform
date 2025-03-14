@@ -237,13 +237,13 @@ async def delete_video(request: web.Request) -> web.Response:
             "details": str(e)
         }, status=500)
 
-
 @routes.post('/api/videos/{video_id}/view')
 async def increment_views(request: web.Request) -> web.Response:
     try:
         video_id = request.match_info['video_id']
         db = get_database()
 
+        # TODO: ObjectId 會不會卡住就崩潰 
         result = await db.videos.update_one(
             {"_id": ObjectId(video_id)},
             {"$inc": {"views": 1}}
