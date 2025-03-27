@@ -121,7 +121,7 @@ async def test_login_wrong_password_failure(
 
 
 async def test_login_wrong_email_failure(cli, url, mock_db):
-    """LG-003: 登入失敗，Emaul錯誤"""
+    """LG-003: 登入失敗，Email錯誤"""
     # Arrange
     mock_db.return_value.users.find_one.return_value = None
 
