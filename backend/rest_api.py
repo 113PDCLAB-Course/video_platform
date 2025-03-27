@@ -11,7 +11,6 @@ from models import UserModel, VideoModel
 
 routes = web.RouteTableDef()
 
-
 @routes.post("/api/register")
 async def register(request: web.Request) -> web.Response:
     try:
