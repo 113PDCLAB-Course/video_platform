@@ -9,7 +9,6 @@ from auth import verify_password, get_password_hash, create_access_token
 
 routes = web.RouteTableDef()
 
-
 @routes.post('/api/register')
 async def register(request: web.Request) -> web.Response:
     try:
