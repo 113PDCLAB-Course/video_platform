@@ -98,7 +98,10 @@ async def login(request: web.Request) -> web.Response:
 async def get_videos(request: web.Request) -> web.Response:
     db = get_database()
     videos = []
-    async for video in db.videos.find():
+
+    video_list = await db.videos.find().to_list(length=None)
+
+    for video in video_list:
         try:
             uploader = None
             uploader_id = video["uploader_id"]
