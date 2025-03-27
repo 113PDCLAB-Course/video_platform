@@ -15,7 +15,7 @@ services:
       MONGODB_HOST: mongo
       MONGODB_PORT: "27017"
     volumes:
-      - ./app_uploads:/app/uploads
+      - ./backend:/app
 
   mongo:
     image: mongo:latest
@@ -35,6 +35,8 @@ services:
       - "3000:3000"
     depends_on:
       - backend
+    volumes:
+      - ./frontend:/app
 
 volumes:
   mongo-data:
