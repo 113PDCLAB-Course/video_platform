@@ -1,11 +1,8 @@
 # test_api.py (測試檔案)
 import pytest
 from aiohttp import web
-import asyncio
-from aiohttp.test_utils import TestClient, AioHTTPTestCase
 
 import rest_api
-import database
 
 @pytest.fixture
 async def client(aiohttp_client):

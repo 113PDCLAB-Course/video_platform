@@ -186,7 +186,6 @@ async def create_video(request: web.Request) -> web.Response:
         print(f"Error uploading video: {str(e)}")
         raise web.HTTPInternalServerError(text=str(e))
 
-
 @routes.delete('/api/videos/{video_id}')
 async def delete_video(request: web.Request) -> web.Response:
     try:
