@@ -265,5 +265,7 @@ async def increment_views(request: web.Request) -> web.Response:
             raise web.HTTPNotFound(text="Video not found")
 
         return web.json_response({"message": "View count updated"})
+    except web.HTTPNotFound as e:
+        raise e
     except Exception as e:
         raise web.HTTPInternalServerError(text=str(e))
