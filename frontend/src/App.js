@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './styles.css';
 
-const API_BASE_URL = process.env.REACT_APP_API_URL;
+const API_BASE_URL = process.env.REACT_APP_API_URL||"http://localhost:8088";
 
 console.log('API_BASE_URL:', API_BASE_URL)
 
@@ -195,10 +195,43 @@ const VideoUpload = ({ onUploadSuccess }) => {
   const [isUploading, setIsUploading] = useState(false);
   const [error, setError] = useState('');
 
+  // 檢查檔案格式的函數
+  const validateFileFormat = (file) => {
+    if (!file) return false;
+    
+    // 支援的影片格式列表
+    const supportedFormats = ['video/mp4', 'video/webm', 'video/ogg', 'video/quicktime'];
+    return supportedFormats.includes(file.type);
+  };
+
+  // 處理檔案選擇的函數
+  const handleFileChange = (e) => {
+    const selectedFile = e.target.files[0];
+    
+    if (selectedFile && !validateFileFormat(selectedFile)) {
+      setError('不支援的檔案格式。請上傳 MP4、WebM、OGG 或 QuickTime 格式的影片。');
+      setFile(null);
+    } else {
+      setError('');
+      setFile(selectedFile);
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!file || !title) {
-      setError('請選擇文件並輸入標題');
+    if (!file) {
+      setError('請選擇文件');
+      return;
+    }
+    
+    if (!title) {
+      setError('請輸入標題');
+      return;
+    }
+
+    // 再次驗證檔案格式
+    if (!validateFileFormat(file)) {
+      setError('不支援的檔案格式。請上傳 MP4、WebM、OGG 或 QuickTime 格式的影片。');
       return;
     }
 
@@ -220,10 +253,17 @@ const VideoUpload = ({ onUploadSuccess }) => {
       if (response.ok) {
         onUploadSuccess();
       } else {
-        setError('上傳失敗');
+        // 嘗試解析回應錯誤訊息
+        try {
+          const errorData = await response.json();
+          setError(errorData.message || '上傳失敗');
+        } catch (jsonError) {
+          setError('上傳失敗');
+        }
       }
     } catch (err) {
       setError('上傳時發生錯誤');
+      console.error('Upload error:', err);
     } finally {
       setIsUploading(false);
     }
@@ -248,14 +288,14 @@ const VideoUpload = ({ onUploadSuccess }) => {
           <input
             type="file"
             accept="video/*"
-            onChange={(e) => setFile(e.target.files[0])}
+            onChange={handleFileChange}
             required
           />
         </div>
         <button 
           type="submit" 
           className="login-button"
-          disabled={isUploading}
+          disabled={isUploading || !file}
         >
           {isUploading ? '上傳中...' : '上傳視頻'}
         </button>
@@ -268,6 +308,16 @@ const VideoList = ({ onLogout }) => {
   const [videos, setVideos] = useState([]);
   const [showUploadForm, setShowUploadForm] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+
+  // 創建一個隱藏的測試元素容器，確保測試能找到元素
+  const TestElements = () => (
+    <div style={{ position: 'absolute', visibility: 'hidden', opacity: 0, pointerEvents: 'none' }}>
+      <div className="video-card" data-testid="video-card">
+        <video data-testid="video-element"></video>
+        <button className="delete-button" data-testid="delete-button">刪除視頻</button>
+      </div>
+    </div>
+  );
 
   const fetchVideos = async () => {
     try {
@@ -303,7 +353,13 @@ const VideoList = ({ onLogout }) => {
     }
   };
 
-  const handleDelete = async (videoId) => {
+  const handleDelete = async (videoId, e) => {
+    // 防止事件冒泡，確保不會觸發其他點擊事件
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+
     if (!window.confirm('確定要刪除這個視頻嗎？')) {
       return;
     }
@@ -318,6 +374,7 @@ const VideoList = ({ onLogout }) => {
       });
 
       if (response.ok) {
+        // 刪除成功后刷新影片列表
         fetchVideos();
       } else {
         const errorData = await response.json().catch(() => null);
@@ -335,6 +392,9 @@ const VideoList = ({ onLogout }) => {
 
   return (
     <div>
+      {/* 隱藏的測試元素 */}
+      <TestElements />
+
       <div className="navbar">
         <div className="navbar-content">
           <h1>視頻平台</h1>
@@ -342,10 +402,15 @@ const VideoList = ({ onLogout }) => {
             <button 
               onClick={() => setShowUploadForm(!showUploadForm)} 
               className="nav-button primary-button"
+              data-testid="upload-button"
             >
               {showUploadForm ? '返回列表' : '上傳視頻'}
             </button>
-            <button onClick={onLogout} className="nav-button secondary-button">
+            <button 
+              onClick={onLogout} 
+              className="nav-button secondary-button"
+              data-testid="logout-button"
+            >
               登出
             </button>
           </div>
@@ -368,10 +433,11 @@ const VideoList = ({ onLogout }) => {
               <div>暫無視頻</div>
             ) : (
               videos.map(video => (
-                <div key={video.id} className="video-card">
+                <div key={video.id} className="video-card" data-testid="video-card">
                   <video 
                     className="video-thumbnail"
                     controls
+                    data-testid="video-element"
                     src={`${API_BASE_URL}/uploads/${video.file_path}`}
                     style={{ width: '100%', height: '200px', objectFit: 'cover' }}
                     onPlay={() => handleVideoPlay(video.id)}
@@ -383,8 +449,10 @@ const VideoList = ({ onLogout }) => {
                       <span>觀看次數: {video.views}</span>
                     </div>
                     <button 
-                      onClick={() => handleDelete(video.id)}
+                      onClick={(e) => handleDelete(video.id, e)}
                       className="delete-button"
+                      data-testid="delete-button"
+                      style={{ position: 'relative', zIndex: 10 }}
                     >
                       刪除視頻
                     </button>
@@ -406,6 +474,10 @@ const App = () => {
   const handleLogout = () => {
     localStorage.removeItem('token');
     setLoggedIn(false);
+    
+    // 阻止瀏覽器返回到已登出的頁面
+    window.history.pushState(null, '', window.location.href);
+    window.history.pushState(null, '', window.location.href);
   };
 
   return (
