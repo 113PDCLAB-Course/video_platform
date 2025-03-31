@@ -1,5 +1,5 @@
 {
-    "video_path": "/Users/wuyousheng/Downloads/SmapleVideo_FHD_30fps.mp4",
-    "test_file_path": "/Users/wuyousheng/Downloads/Sample_TestPlan.pdf",
-    "frontend_service_path":"/Users/wuyousheng/Desktop/Python_work/video_platform-main/frontend"
+    "video_path": "/Users/wuyousheng/Desktop/PythonProject/SoftwareEngineering_Final/SmapleVideo_FHD_30fps.mp4",
+    "test_file_path": "/Users/wuyousheng/Desktop/PythonProject/SoftwareEngineering_Final/Sample_TestPlan.pdf",
+    "frontend_service_path": ""
 }
